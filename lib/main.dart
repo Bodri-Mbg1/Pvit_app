@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pvit_gestion/screens/intro1.dart';
+import 'package:pvit_gestion/screens/login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
             theme: ThemeData(fontFamily: 'SFPro'),
             debugShowCheckedModeBanner: false,
             locale: const Locale('fr', 'FR'),
-            home: const Intro1(),
+            home: const LoginPage(),
           );
         },
       ),

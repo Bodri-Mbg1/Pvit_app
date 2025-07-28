@@ -192,8 +192,9 @@ class _LoginPageState extends State<LoginPage> {
                           );
                         } else if (data['status'] == 'SUCCESS') {
                           final utilisateurId = data['utilisateurId'];
-                          final token = data['token']; // ✅ Ajouté ici
-
+                          final nom = data['nom'];
+                          final prenom = data['prenom'];
+                          final token = data['token'];
                           if (utilisateurId == null || token == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
@@ -211,6 +212,8 @@ class _LoginPageState extends State<LoginPage> {
                               builder: (context) => Home(
                                 utilisateurId: utilisateurId,
                                 token: token,
+                                nom: nom,
+                                prenom: prenom,
                               ),
                             ),
                           );
