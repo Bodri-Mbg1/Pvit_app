@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pvit_gestion/class/intervention_model.dart';
 import 'package:pvit_gestion/screens/demande_installation.dart';
 import 'package:pvit_gestion/screens/rapport_instantane.dart';
+import 'package:pvit_gestion/services/intervention_service.dart';
 
 class Home extends StatefulWidget {
   final int utilisateurId;
@@ -21,6 +23,33 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  List<InterventionModel> interventions = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchInterventions();
+  }
+
+  Future<void> fetchInterventions() async {
+    try {
+      final data = await InterventionService.fetchInterventions(
+        widget.utilisateurId,
+        widget.token,
+      );
+      setState(() {
+        interventions = data;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Erreur de chargement : $e");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,9 +82,9 @@ class _HomeState extends State<Home> {
                 style: TextStyle(fontSize: 18.sp, color: Colors.grey[700]),
               ),
               Text(
-                "Bienvenue, ${widget.prenom}",
+                "Bienvenue, Mr ${widget.prenom} !",
                 style: TextStyle(
-                  fontSize: 32.sp,
+                  fontSize: 28.sp,
                   fontWeight: FontWeight.w600,
                   letterSpacing: -2.5,
                 ),
@@ -105,7 +134,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: 10.h),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -148,35 +177,73 @@ class _HomeState extends State<Home> {
                 ),
               ),
 
-              const SizedBox(height: 30),
+              SizedBox(height: 20.h),
 
               // Titre section
               const Text(
                 "Intervention Planifiées",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -1.5,
+                ),
               ),
               const SizedBox(height: 16),
 
               // Filtres semaine
-              Row(
-                children: [
-                  FilterChip(
-                    label: const Text("Cette semaine"),
-                    selected: true,
-                    onSelected: (_) {},
-                  ),
-                  const SizedBox(width: 10),
-                  FilterChip(
-                    label: const Text("La semaine prochaine"),
-                    selected: false,
-                    onSelected: (_) {},
-                  ),
-                ],
-              ),
-
               const SizedBox(height: 20),
 
               // Cartes d'intervention
+              isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : Column(
+                      children: interventions.map((intervention) {
+                        final isInstallation =
+                            intervention.type == "INSTALLATION";
+                        final daysLeft = DateTime.parse(
+                          intervention.datePlanifier,
+                        ).difference(DateTime.now()).inDays;
+
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isInstallation
+                                ? Color(0xffF58642)
+                                : Color(0xff5DA0D3),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    isInstallation
+                                        ? "Installation"
+                                        : "Visite Technique",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  Text(
+                                    "Dans $daysLeft jour${daysLeft > 1 ? 's' : ''}",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                color: Colors.white,
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                    ),
             ],
           ),
         ),
