@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:pvit_gestion/class/intervention_model.dart';
 import 'package:pvit_gestion/screens/demande_installation.dart';
+import 'package:pvit_gestion/screens/detail_intervention_page.dart';
 import 'package:pvit_gestion/screens/rapport_instantane.dart';
 import 'package:pvit_gestion/services/intervention_service.dart';
 
@@ -204,42 +205,54 @@ class _HomeState extends State<Home> {
                           intervention.datePlanifier,
                         ).difference(DateTime.now()).inDays;
 
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 16),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: isInstallation
-                                ? Color(0xffF58642)
-                                : Color(0xff5DA0D3),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    isInstallation
-                                        ? "Installation"
-                                        : "Visite Technique",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DetailInterventionPage(
+                                  intervention: intervention,
+                                ),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 16),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: isInstallation
+                                  ? Color(0xffF58642)
+                                  : Color(0xff5DA0D3),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      isInstallation
+                                          ? "Installation"
+                                          : "Visite Technique",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                    "Dans $daysLeft jour${daysLeft > 1 ? 's' : ''}",
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.white,
-                              ),
-                            ],
+                                    Text(
+                                      "Dans $daysLeft jour${daysLeft > 1 ? 's' : ''}",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       }).toList(),

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:pvit_gestion/screens/class/intervention_model.dart';
+import 'package:pvit_gestion/class/intervention_model.dart';
+import 'package:pvit_gestion/config/config.dart';
 
 class InterventionService {
   static Future<List<InterventionModel>> fetchInterventions(
@@ -8,7 +9,7 @@ class InterventionService {
     String token,
   ) async {
     final url = Uri.parse(
-      "http://192.168.1.85:8080/api/interventions/technicien/$userId",
+      "${AppConfig.baseUrl}/api/interventions/technicien/$userId",
     );
     final response = await http.get(
       url,

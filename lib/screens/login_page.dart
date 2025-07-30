@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:http/http.dart' as http;
+import 'package:pvit_gestion/config/config.dart';
 import 'package:pvit_gestion/screens/changer-motdepasse.dart';
 import 'package:pvit_gestion/screens/home.dart';
 
@@ -167,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                     final motDePasse = _passwordController.text.trim();
                     try {
                       final response = await http.post(
-                        Uri.parse('http://192.168.1.85:8080/api/auth/login'),
+                        Uri.parse('${AppConfig.baseUrl}/api/auth/login'),
                         headers: {'Content-Type': 'application/json'},
                         body: jsonEncode({
                           'email': email,

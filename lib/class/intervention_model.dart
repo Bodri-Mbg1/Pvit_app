@@ -2,24 +2,32 @@ import 'package:pvit_gestion/class/marchand.dart';
 import 'package:pvit_gestion/class/demande_installation.dart';
 
 class InterventionModel {
+  final int id;
   final String type;
   final String datePlanifier;
   final String? description; // pour les visites
   final Marchand? marchand; // pour les visites
   final DemandeInstallation? demandeInstallation; // pour installations
+  final int technicienId;
+  final bool rapportExiste;
 
   InterventionModel({
+    required this.id,
     required this.type,
     required this.datePlanifier,
     this.description,
     this.marchand,
     this.demandeInstallation,
+    required this.technicienId,
+    this.rapportExiste = false,
   });
 
   factory InterventionModel.fromJson(Map<String, dynamic> json) {
     return InterventionModel(
+      id: json['id'],
       type: json['type'],
       datePlanifier: json['datePlanifier'],
+      technicienId: json['technicien']['id'],
       description: json['description'],
       marchand: json['marchand'] != null
           ? Marchand.fromJson(json['marchand'])
@@ -27,6 +35,7 @@ class InterventionModel {
       demandeInstallation: json['demandeInstallation'] != null
           ? DemandeInstallation.fromJson(json['demandeInstallation'])
           : null,
+      rapportExiste: json['rapportExiste'] ?? false,
     );
   }
 }
