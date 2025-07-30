@@ -10,6 +10,7 @@ class InterventionModel {
   final DemandeInstallation? demandeInstallation; // pour installations
   final int technicienId;
   final bool rapportExiste;
+  String statut;
 
   InterventionModel({
     required this.id,
@@ -20,6 +21,7 @@ class InterventionModel {
     this.demandeInstallation,
     required this.technicienId,
     this.rapportExiste = false,
+    required this.statut,
   });
 
   factory InterventionModel.fromJson(Map<String, dynamic> json) {
@@ -29,6 +31,7 @@ class InterventionModel {
       datePlanifier: json['datePlanifier'],
       technicienId: json['technicien']['id'],
       description: json['description'],
+      statut: json['statut'] ?? 'EN_ATTENTE',
       marchand: json['marchand'] != null
           ? Marchand.fromJson(json['marchand'])
           : null,

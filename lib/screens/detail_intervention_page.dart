@@ -5,26 +5,45 @@ import 'package:intl/intl.dart';
 import 'package:pvit_gestion/class/intervention_model.dart';
 import 'package:pvit_gestion/screens/rapport_form_page.dart';
 
-class DetailInterventionPage extends StatelessWidget {
+class DetailInterventionPage extends StatefulWidget {
   final InterventionModel intervention;
 
   const DetailInterventionPage({Key? key, required this.intervention})
     : super(key: key);
 
   @override
+  State<DetailInterventionPage> createState() => _DetailInterventionPageState();
+}
+
+class _DetailInterventionPageState extends State<DetailInterventionPage> {
+  late InterventionModel intervention;
+
+  @override
+  void initState() {
+    super.initState();
+    intervention = widget.intervention;
+  }
+
+  void refreshIntervention() async {
+    setState(() {
+      intervention.statut = 'TERMINEE';
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool isInstallation = intervention.type == "INSTALLATION";
+    final bool isInstallation = widget.intervention.type == "INSTALLATION";
 
     // Description
     final String description = isInstallation
-        ? (intervention.demandeInstallation?.description ??
+        ? (widget.intervention.demandeInstallation?.description ??
               "Pas de description")
-        : (intervention.description ?? "Pas de description");
+        : (widget.intervention.description ?? "Pas de description");
 
     // Marchand
     final marchand = isInstallation
-        ? intervention.demandeInstallation?.marchand
-        : intervention.marchand;
+        ? widget.intervention.demandeInstallation?.marchand
+        : widget.intervention.marchand;
 
     final String nomMarchand = marchand?.nom ?? "Non renseigné";
     final String localisation = marchand?.localisation ?? "Non renseigné";
@@ -32,7 +51,7 @@ class DetailInterventionPage extends StatelessWidget {
 
     // Date
 
-    final date = DateTime.parse(intervention.datePlanifier);
+    final date = DateTime.parse(widget.intervention.datePlanifier);
     final formattedDate = DateFormat('dd/MM/yyyy').format(date);
     final daysLeft = date.difference(DateTime.now()).inDays;
 
@@ -167,22 +186,21 @@ class DetailInterventionPage extends StatelessWidget {
           Spacer(),
 
           Center(
-            child: intervention.rapportExiste
+            child: intervention.statut == "TERMINEE"
                 ? Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.w,
-                      vertical: 12.h,
-                    ),
+                    width: 200.w,
+                    height: 45.h,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.blue),
-                      borderRadius: BorderRadius.circular(30.r),
+                      borderRadius: BorderRadius.circular(30),
                     ),
-                    child: Text(
-                      "Rapport envoyé",
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16.sp,
+                    child: Center(
+                      child: Text(
+                        "Rapport envoyé",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   )
@@ -192,8 +210,8 @@ class DetailInterventionPage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                           builder: (_) => RapportFormPage(
-                            interventionId: intervention.id,
-                            technicienId: intervention.technicienId,
+                            interventionId: widget.intervention.id,
+                            technicienId: widget.intervention.technicienId,
                           ),
                         ),
                       );
