@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:http/http.dart' as http;
+import 'package:iconsax_plus/iconsax_plus.dart';
 
 class ChangerMotDePassePage extends StatefulWidget {
   final int utilisateurId;
@@ -71,27 +72,44 @@ class _ChangerMotDePassePageState extends State<ChangerMotDePassePage> {
             Center(
               child: Text(
                 'Logo',
-                style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 24.sp,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -1.8,
+                ),
               ),
             ),
             SizedBox(height: 30.h),
             Text(
               'Créez votre nouveau\nMot de passe',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 28.sp, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 28.sp,
+                fontWeight: FontWeight.bold,
+                letterSpacing: -1.3,
+                height: -0,
+              ),
             ),
             SizedBox(height: 10.h),
             Text(
               'Pour des raisons de sécurité veuillez svp\nentrez un nouveau mot de passe',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 13.sp, color: Colors.grey[600]),
+              style: TextStyle(
+                fontSize: 13.sp,
+                color: Colors.grey[600],
+                height: -0,
+              ),
             ),
             SizedBox(height: 40.h),
 
             // Champ Mot de passe
             Text(
               "Mot de passe",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+              style: TextStyle(
+                letterSpacing: -0.5,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(height: 8.h),
             _buildPasswordField(
@@ -109,7 +127,11 @@ class _ChangerMotDePassePageState extends State<ChangerMotDePassePage> {
             // Champ Confirmation
             Text(
               "Confirmation de mot de passe",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+              style: TextStyle(
+                letterSpacing: -0.5,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             SizedBox(height: 8.h),
             _buildPasswordField(
@@ -133,15 +155,16 @@ class _ChangerMotDePassePageState extends State<ChangerMotDePassePage> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12.r),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
                 ),
                 child: Text(
                   'Confirmez',
                   style: TextStyle(
-                    fontSize: 16.sp,
+                    fontSize: 19.sp,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
+                    letterSpacing: -0.9,
                   ),
                 ),
               ),
@@ -166,7 +189,7 @@ class _ChangerMotDePassePageState extends State<ChangerMotDePassePage> {
       ),
       child: Row(
         children: [
-          Icon(Icons.lock, color: Colors.blue),
+          Icon(IconsaxPlusBold.key, color: Colors.blue),
           SizedBox(width: 8.w),
           Expanded(
             child: TextField(
@@ -174,6 +197,12 @@ class _ChangerMotDePassePageState extends State<ChangerMotDePassePage> {
               obscureText: isObscure,
               decoration: InputDecoration(
                 hintText: 'Entrez votre mot de passe',
+                hintStyle: TextStyle(
+                  fontSize: 14.sp,
+                  letterSpacing: -0.2,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.grey,
+                ),
                 border: InputBorder.none,
               ),
             ),
@@ -181,7 +210,9 @@ class _ChangerMotDePassePageState extends State<ChangerMotDePassePage> {
           GestureDetector(
             onTap: onToggle,
             child: Icon(
-              isObscure ? Icons.visibility_off : Icons.visibility,
+              _obscurePassword
+                  ? IconsaxPlusLinear.eye_slash
+                  : IconsaxPlusLinear.eye,
               color: Colors.grey,
             ),
           ),

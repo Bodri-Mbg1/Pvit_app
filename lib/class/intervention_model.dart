@@ -4,7 +4,7 @@ import 'package:pvit_gestion/class/demande_installation.dart';
 class InterventionModel {
   final int id;
   final String type;
-  final String datePlanifier;
+  final String? datePlanifier;
   final String? description; // pour les visites
   final Marchand? marchand; // pour les visites
   final DemandeInstallation? demandeInstallation; // pour installations

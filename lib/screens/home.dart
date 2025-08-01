@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:iconsax_plus/iconsax_plus.dart';
 import 'package:pvit_gestion/class/intervention_model.dart';
-import 'package:pvit_gestion/screens/demande_installation.dart';
 import 'package:pvit_gestion/screens/detail_intervention_page.dart';
 import 'package:pvit_gestion/screens/rapport_instantane.dart';
 import 'package:pvit_gestion/services/intervention_service.dart';
+import 'package:pvit_gestion/screens/demande_installation_page.dart';
+import 'dart:async';
 
 class Home extends StatefulWidget {
   final int utilisateurId;
@@ -26,25 +28,42 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   List<InterventionModel> interventions = [];
   bool isLoading = true;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    fetchInterventions();
+    fetchInterventions(); // chargement initial
+
+    // 🔁 Mettre à jour toutes les secondes
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      fetchInterventions();
+    });
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel(); // 🔥 annule le Timer proprement
+    super.dispose();
+  }
+
+  @override
   Future<void> fetchInterventions() async {
     try {
       final data = await InterventionService.fetchInterventions(
         widget.utilisateurId,
         widget.token,
       );
+
+      if (!mounted) return; // 🔒 empêche le crash
       setState(() {
         interventions = data;
         isLoading = false;
       });
     } catch (e) {
       print("Erreur de chargement : $e");
+
+      if (!mounted) return; // 🔒 empêche le crash
       setState(() {
         isLoading = false;
       });
@@ -85,7 +104,7 @@ class _HomeState extends State<Home> {
               Text(
                 "Bienvenue, Mr ${widget.prenom} !",
                 style: TextStyle(
-                  fontSize: 28.sp,
+                  fontSize: 25.sp,
                   fontWeight: FontWeight.w600,
                   letterSpacing: -2.5,
                 ),
@@ -98,10 +117,16 @@ class _HomeState extends State<Home> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const DemandeInstallation(),
+                      builder: (context) => DemandeInstallationPage(
+                        technicienId: widget.utilisateurId,
+                        token: widget.token,
+                        nom: widget.nom,
+                        prenom: widget.prenom,
+                      ),
                     ),
                   );
                 },
+
                 child: Container(
                   width: double.infinity,
                   height: 90.h,
@@ -118,7 +143,7 @@ class _HomeState extends State<Home> {
                           "Demande \nd'installation",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 30.sp,
+                            fontSize: 25.sp,
                             fontWeight: FontWeight.bold,
                             letterSpacing: -1.5,
                             height: 1,
@@ -161,7 +186,7 @@ class _HomeState extends State<Home> {
                           "Rapport \ninstantané",
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 30.sp,
+                            fontSize: 25.sp,
                             fontWeight: FontWeight.bold,
                             letterSpacing: -1.5,
                             height: 1,
@@ -197,66 +222,132 @@ class _HomeState extends State<Home> {
               // Cartes d'intervention
               isLoading
                   ? Center(child: CircularProgressIndicator())
-                  : Column(
-                      children: interventions.map((intervention) {
-                        final isInstallation =
-                            intervention.type == "INSTALLATION";
-                        final daysLeft = DateTime.parse(
-                          intervention.datePlanifier,
-                        ).difference(DateTime.now()).inDays;
+                  : (() {
+                      // ✅ On trie les interventions
+                      List<InterventionModel> sortedInterventions = [
+                        ...interventions,
+                      ];
 
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => DetailInterventionPage(
-                                  intervention: intervention,
+                      sortedInterventions.sort((a, b) {
+                        DateTime? dateA;
+                        DateTime? dateB;
+
+                        try {
+                          if (a.datePlanifier?.isNotEmpty ?? false) {
+                            dateA = DateTime.parse(a.datePlanifier!);
+                          }
+                        } catch (_) {}
+
+                        try {
+                          if (b.datePlanifier?.isNotEmpty ?? false) {
+                            dateB = DateTime.parse(b.datePlanifier!);
+                          }
+                        } catch (_) {}
+
+                        if (dateA == null && dateB == null) return 0;
+                        if (dateA == null) return 1;
+                        if (dateB == null) return -1;
+
+                        return dateA
+                            .difference(DateTime.now())
+                            .inDays
+                            .compareTo(dateB.difference(DateTime.now()).inDays);
+                      });
+                      return Column(
+                        children: sortedInterventions.map((intervention) {
+                          final isInstallation =
+                              intervention.type == "INSTALLATION";
+
+                          int? daysLeft;
+                          String messageDate = "Pas encore planifiée";
+
+                          if (intervention.datePlanifier?.isNotEmpty ?? false) {
+                            try {
+                              final parsedDate = DateTime.parse(
+                                intervention.datePlanifier!,
+                              );
+                              daysLeft = parsedDate
+                                  .difference(DateTime.now())
+                                  .inDays;
+                              messageDate = daysLeft > 0
+                                  ? "Dans $daysLeft jour${daysLeft > 1 ? 's' : ''}"
+                                  : "Aujourd'hui";
+                            } catch (e) {
+                              print("Erreur lors du parsing de la date : $e");
+                            }
+                          }
+
+                          return GestureDetector(
+                            onTap: () async {
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => DetailInterventionPage(
+                                    intervention: intervention,
+                                  ),
                                 ),
+                              );
+                              if (result == true) {}
+                            },
+                            child: Container(
+                              margin: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                color: isInstallation
+                                    ? Color(0xffF58642)
+                                    : Color(0xff5DA0D3),
+                                borderRadius: BorderRadius.circular(30.r),
                               ),
-                            );
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: isInstallation
-                                  ? Color(0xffF58642)
-                                  : Color(0xff5DA0D3),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 30.r,
+                                    backgroundColor: isInstallation
+                                        ? Color(0xffFBD1AD)
+                                        : Color(0xffC7DDF0),
+                                    child: Icon(
                                       isInstallation
-                                          ? "Installation"
-                                          : "Visite Technique",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
+                                          ? IconsaxPlusBroken.setting_3
+                                          : IconsaxPlusBroken.mouse_1,
+                                      color: Colors.white,
+                                      size: 40.sp,
+                                    ),
+                                  ),
+                                  SizedBox(width: 16.w),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        isInstallation
+                                            ? "Installation"
+                                            : "Visite Technique",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                        ),
                                       ),
-                                    ),
-                                    Text(
-                                      "Dans $daysLeft jour${daysLeft > 1 ? 's' : ''}",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Colors.white,
-                                ),
-                              ],
+                                      Text(
+                                        daysLeft != null
+                                            ? "Dans $daysLeft jour${daysLeft > 1 ? 's' : ''}"
+                                            : "Pas encore planifiée",
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
+                                  Spacer(),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
+                          );
+                        }).toList(),
+                      );
+                    })(),
             ],
           ),
         ),

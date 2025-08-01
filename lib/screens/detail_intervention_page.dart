@@ -51,13 +51,21 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
 
     // Date
 
-    final date = DateTime.parse(widget.intervention.datePlanifier);
-    final formattedDate = DateFormat('dd/MM/yyyy').format(date);
-    final daysLeft = date.difference(DateTime.now()).inDays;
+    String formattedDate = "Non planifiée";
+    String labelDate = "À planifier";
 
-    final String labelDate = daysLeft > 0
-        ? "Dans $daysLeft jour${daysLeft > 1 ? 's' : ''}"
-        : "Aujourd'hui";
+    if (widget.intervention.datePlanifier?.isNotEmpty ?? false) {
+      try {
+        final date = DateTime.parse(widget.intervention.datePlanifier!);
+        formattedDate = DateFormat('dd/MM/yyyy').format(date);
+        final daysLeft = date.difference(DateTime.now()).inDays;
+        labelDate = daysLeft > 0
+            ? "Dans $daysLeft jour${daysLeft > 1 ? 's' : ''}"
+            : "Aujourd'hui";
+      } catch (e) {
+        print("Erreur parsing date : $e");
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +76,7 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
         children: [
           Container(
             width: double.infinity,
-            height: 250.h,
+            height: 220.h,
             decoration: BoxDecoration(
               color: isInstallation ? Color(0xffF58642) : Color(0xff5DA0D3),
               borderRadius: BorderRadius.only(
@@ -83,7 +91,9 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
                 children: [
                   SizedBox(height: 20.h),
                   Icon(
-                    isInstallation ? Icons.home : IconsaxPlusBroken.mouse_1,
+                    isInstallation
+                        ? IconsaxPlusBroken.setting_3
+                        : IconsaxPlusBroken.mouse_1,
                     color: Colors.white,
                     size: 110.sp,
                   ),
@@ -132,7 +142,7 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
                 ),
                 SizedBox(height: 8),
                 Container(
-                  height: 120.h,
+                  height: 190.h,
                   width: double.infinity,
                   child: Text(
                     description,
@@ -147,7 +157,7 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
 
           // Informations du marchand
           Padding(
-            padding: const EdgeInsets.all(25),
+            padding: const EdgeInsets.only(left: 25),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -188,8 +198,8 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
           Center(
             child: intervention.statut == "TERMINEE"
                 ? Container(
-                    width: 200.w,
-                    height: 45.h,
+                    width: 325.w,
+                    height: 55.h,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.blue),
                       borderRadius: BorderRadius.circular(30),
@@ -204,9 +214,9 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
                       ),
                     ),
                   )
-                : ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
+                : GestureDetector(
+                    onTap: () async {
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => RapportFormPage(
@@ -215,12 +225,35 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
                           ),
                         ),
                       );
+
+                      if (result == true) {
+                        refreshIntervention();
+                        Navigator.pop(context, true);
+                      }
                     },
-                    child: Text("Établir le rapport"),
+                    child: Container(
+                      width: 325.w,
+                      height: 55.h,
+                      decoration: BoxDecoration(
+                        color: Color(0xff3C89C5),
+                        borderRadius: BorderRadius.circular(50),
+                      ),
+                      child: Center(
+                        child: Text(
+                          "Établir le rapport",
+                          style: TextStyle(
+                            fontSize: 23.sp,
+                            letterSpacing: -1,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
           ),
 
-          SizedBox(height: 20),
+          SizedBox(height: 20.h),
         ],
       ),
     );

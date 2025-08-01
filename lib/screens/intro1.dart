@@ -14,7 +14,7 @@ class _Intro1State extends State<Intro1> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 8), () {
+    Timer(const Duration(seconds: 4), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const OnboardingPage()),
