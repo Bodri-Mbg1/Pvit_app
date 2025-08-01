@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:pvit_gestion/class/demande_installation_model.dart';
-import 'package:pvit_gestion/screens/demande_success_page.dart';
+import 'package:pvit_gestion/screens_succes/demande_success_page.dart';
 import '../services/demande_service.dart';
 
 class DemandeInstallationPage extends StatefulWidget {
