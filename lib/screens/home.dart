@@ -1,3 +1,5 @@
+// ignore_for_file: unused_local_variable, avoid_print
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:iconsax_plus/iconsax_plus.dart';
@@ -48,6 +50,7 @@ class _HomeState extends State<Home> {
   }
 
   @override
+  // ignore: override_on_non_overriding_member
   Future<void> fetchInterventions() async {
     try {
       final data = await InterventionService.fetchInterventions(

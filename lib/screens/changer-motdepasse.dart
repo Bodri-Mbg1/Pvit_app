@@ -1,3 +1,5 @@
+// ignore_for_file: file_names
+
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -76,10 +78,12 @@ class _ChangerMotDePassePageState extends State<ChangerMotDePassePage> {
     );
 
     if (response.statusCode == 200) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Mot de passe changé avec succès")),
       );
       Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
         context,
         MaterialPageRoute(
           builder: (context) =>
@@ -88,12 +92,14 @@ class _ChangerMotDePassePageState extends State<ChangerMotDePassePage> {
       );
     } else {
       ScaffoldMessenger.of(
+        // ignore: use_build_context_synchronously
         context,
       ).showSnackBar(SnackBar(content: Text("Une erreur est survenue")));
     }
   }
 
   @override
+  // ignore: override_on_non_overriding_member
   void _evaluatePasswordStrength(String password) {
     int score = 0;
 

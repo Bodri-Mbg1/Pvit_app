@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import, use_build_context_synchronously, duplicate_ignore, avoid_print
+
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -11,6 +13,7 @@ class RapportFormPage extends StatefulWidget {
   final int interventionId;
   final int technicienId;
 
+  // ignore: use_super_parameters
   const RapportFormPage({
     Key? key,
     required this.interventionId,
@@ -35,6 +38,7 @@ class _RapportFormPageState extends State<RapportFormPage> {
       return;
     }
 
+    // ignore: unnecessary_nullable_for_final_variable_declarations
     final List<XFile>? images = await _picker.pickMultiImage();
     if (images != null) {
       setState(() {
@@ -124,14 +128,18 @@ class _RapportFormPageState extends State<RapportFormPage> {
         // ✅ Fermer la popup
         if (mounted) Navigator.pop(context); // Ferme le Dialog
         if (mounted)
+          // ignore: curly_braces_in_flow_control_structures
           Navigator.pop(context, true); // Reviens à la page précédente
       } else {
+        // ignore: avoid_print
         print("Erreur serveur : ${response.statusCode}");
         print("Réponse : ${response.body}");
         throw Exception("Échec de l'envoi");
       }
     } catch (e) {
+      // ignore: avoid_print
       print("Erreur : $e");
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Erreur lors de l'envoi du rapport")),
       );

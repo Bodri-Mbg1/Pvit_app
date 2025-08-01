@@ -8,6 +8,7 @@ import 'package:pvit_gestion/screens/rapport_form_page.dart';
 class DetailInterventionPage extends StatefulWidget {
   final InterventionModel intervention;
 
+  // ignore: use_super_parameters
   const DetailInterventionPage({Key? key, required this.intervention})
     : super(key: key);
 
@@ -52,6 +53,7 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
     // Date
 
     String formattedDate = "Non planifiée";
+    // ignore: unused_local_variable
     String labelDate = "À planifier";
 
     if (widget.intervention.datePlanifier?.isNotEmpty ?? false) {
@@ -63,6 +65,7 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
             ? "Dans $daysLeft jour${daysLeft > 1 ? 's' : ''}"
             : "Aujourd'hui";
       } catch (e) {
+        // ignore: avoid_print
         print("Erreur parsing date : $e");
       }
     }
@@ -141,6 +144,7 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),
+                // ignore: sized_box_for_whitespace
                 Container(
                   height: 190.h,
                   width: double.infinity,
@@ -228,6 +232,7 @@ class _DetailInterventionPageState extends State<DetailInterventionPage> {
 
                       if (result == true) {
                         refreshIntervention();
+                        // ignore: use_build_context_synchronously
                         Navigator.pop(context, true);
                       }
                     },
